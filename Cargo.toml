@@ -34,7 +34,7 @@ tokio-stream = { version = "0.1.14" }
 tracing = "0.1.40"
 url = "2.5.4"
 
-near-indexer-primitives = "0.34.0-rc.3"
+near-indexer-primitives = "0.34.0-rc.4"
 
 [lib]
 doctest = false
