@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use near_primitives::types::Balance;
+
 use super::actions::{self, ActionMetaDataExt};
 use super::events::{self, EventsTrait};
 use super::receipts::{self};
@@ -258,8 +260,8 @@ pub struct BlockHeader {
     timestamp_nanosec: u64,
     epoch_id: CryptoHash,
     next_epoch_id: CryptoHash,
-    gas_price: u128,
-    total_supply: u128,
+    gas_price: Balance,
+    total_supply: Balance,
     latest_protocol_version: u32,
     random_value: CryptoHash,
     chunks_included: u64,
@@ -303,12 +305,12 @@ impl BlockHeader {
     }
 
     /// The gas price of the [Block]
-    pub fn gas_price(&self) -> u128 {
+    pub fn gas_price(&self) -> Balance {
         self.gas_price
     }
 
     /// The total supply of the [Block]
-    pub fn total_supply(&self) -> u128 {
+    pub fn total_supply(&self) -> Balance {
         self.total_supply
     }
 
