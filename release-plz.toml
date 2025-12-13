@@ -3,6 +3,6 @@
 changelog_update = false
 
 [[package]]
-name = "lake-framework"
+name = "near-lake-framework"
 changelog_update = true
 changelog_path = "./CHANGELOG.md"
