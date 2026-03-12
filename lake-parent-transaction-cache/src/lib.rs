@@ -102,6 +102,6 @@ impl ParentTransactionCache {
         // **Note**: [cached::SizedCache] updates metadata on every cache access. That's why
         // we need to use a write lock here.
         let mut cache = self.cache.write().unwrap();
-        cache.cache_get(receipt_id).cloned()
+        cache.cache_get(receipt_id).copied()
     }
 }

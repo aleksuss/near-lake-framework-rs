@@ -28,37 +28,37 @@ pub struct Transaction {
 
 impl Transaction {
     /// Returns the [CryptoHash] hash of the transaction.
-    pub fn transaction_hash(&self) -> CryptoHash {
+    pub const fn transaction_hash(&self) -> CryptoHash {
         self.transaction_hash
     }
 
     /// Returns the [AccountId] of the signer of the transaction.
-    pub fn signer_id(&self) -> &AccountId {
+    pub const fn signer_id(&self) -> &AccountId {
         &self.signer_id
     }
 
     /// Returns the [PublicKey] of the signer of the transaction.
-    pub fn signer_public_key(&self) -> &PublicKey {
+    pub const fn signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
     }
 
     /// Returns the [Signature] of the transaction.
-    pub fn signature(&self) -> &Signature {
+    pub const fn signature(&self) -> &Signature {
         &self.signature
     }
 
     /// Returns the [AccountId] of the receiver of the transaction.
-    pub fn receiver_id(&self) -> &AccountId {
+    pub const fn receiver_id(&self) -> &AccountId {
         &self.receiver_id
     }
 
     /// Returns the [ExecutionStatus] of the corresponding ExecutionOutcome.
-    pub fn status(&self) -> &ExecutionStatus {
+    pub const fn status(&self) -> &ExecutionStatus {
         &self.status
     }
 
     /// Returns the [CryptoHash] id of the corresponding ExecutionOutcome.
-    pub fn execution_outcome_id(&self) -> CryptoHash {
+    pub const fn execution_outcome_id(&self) -> CryptoHash {
         self.execution_outcome_id
     }
 

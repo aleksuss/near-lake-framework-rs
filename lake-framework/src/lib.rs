@@ -45,11 +45,11 @@ impl types::Lake {
     ///
     /// # async fn handle_block(_block: near_lake_primitives::block::Block, context: &MyContext) -> anyhow::Result<()> { Ok(()) }
     ///```
-    pub fn run_with_context<'context, C: LakeContextExt, E, Fut>(
+    pub fn run_with_context<C: LakeContextExt, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &'context C) -> Fut,
-        context: &'context C,
-    ) -> Result<(), LakeError>
+        f: impl Fn(near_lake_primitives::block::Block, &C) -> Fut,
+        context: &C,
+    ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,
@@ -60,11 +60,11 @@ impl types::Lake {
         runtime.block_on(async move { self.run_with_context_async(f, context).await })
     }
 
-    pub async fn run_with_context_async<'context, C: LakeContextExt, E, Fut>(
+    pub async fn run_with_context_async<C: LakeContextExt, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &'context C) -> Fut,
-        context: &'context C,
-    ) -> Result<(), LakeError>
+        f: impl Fn(near_lake_primitives::block::Block, &C) -> Fut,
+        context: &C,
+    ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,
@@ -97,8 +97,8 @@ impl types::Lake {
         // propagate errors from the sender
         match sender.await {
             Ok(Ok(())) => Ok(()),
-            Ok(Err(err)) => Err(err),
-            Err(err) => Err(err.into()), // JoinError
+            Ok(Err(err)) => Err(Box::new(err)),
+            Err(err) => Err(Box::new(err.into())), // JoinError
         }
     }
 
@@ -118,7 +118,7 @@ impl types::Lake {
     pub fn run<Fut, E>(
         self,
         f: impl Fn(near_lake_primitives::block::Block) -> Fut,
-    ) -> Result<(), LakeError>
+    ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,
@@ -153,7 +153,7 @@ impl types::Lake {
     pub async fn run_async<Fut, E>(
         self,
         f: impl Fn(near_lake_primitives::block::Block) -> Fut,
-    ) -> Result<(), LakeError>
+    ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,

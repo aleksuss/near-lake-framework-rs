@@ -1,5 +1,5 @@
 use near_crypto::PublicKey;
-use near_primitives::{types::Nonce, views::GasKeyView};
+use near_primitives::types::Nonce;
 
 use crate::near_indexer_primitives::{
     types::AccountId,
@@ -115,20 +115,11 @@ pub enum StateChangeValue {
         account_id: AccountId,
         public_key: PublicKey,
     },
-    GasKeyUpdate {
-        account_id: AccountId,
-        public_key: PublicKey,
-        gas_key: GasKeyView,
-    },
     GasKeyNonceUpdate {
         account_id: AccountId,
         public_key: PublicKey,
-        index: u32,
+        index: u16,
         nonce: Nonce,
-    },
-    GasKeyDeletion {
-        account_id: AccountId,
-        public_key: PublicKey,
     },
     DataUpdate {
         account_id: AccountId,
@@ -155,9 +146,7 @@ impl StateChangeValue {
             Self::AccountDeletion { account_id } => account_id.clone(),
             Self::AccessKeyUpdate { account_id, .. } => account_id.clone(),
             Self::AccessKeyDeletion { account_id, .. } => account_id.clone(),
-            Self::GasKeyUpdate { account_id, .. } => account_id.clone(),
             Self::GasKeyNonceUpdate { account_id, .. } => account_id.clone(),
-            Self::GasKeyDeletion { account_id, .. } => account_id.clone(),
             Self::DataUpdate { account_id, .. } => account_id.clone(),
             Self::DataDeletion { account_id, .. } => account_id.clone(),
             Self::ContractCodeUpdate { account_id, .. } => account_id.clone(),
@@ -195,15 +184,6 @@ impl From<&StateChangeValueView> for StateChangeValue {
                 account_id: account_id.clone(),
                 public_key: public_key.clone(),
             },
-            StateChangeValueView::GasKeyUpdate {
-                account_id,
-                public_key,
-                gas_key,
-            } => Self::GasKeyUpdate {
-                account_id: account_id.clone(),
-                public_key: public_key.clone(),
-                gas_key: gas_key.clone(),
-            },
             StateChangeValueView::GasKeyNonceUpdate {
                 account_id,
                 public_key,
@@ -214,13 +194,6 @@ impl From<&StateChangeValueView> for StateChangeValue {
                 public_key: public_key.clone(),
                 index: *index,
                 nonce: *nonce,
-            },
-            StateChangeValueView::GasKeyDeletion {
-                account_id,
-                public_key,
-            } => Self::GasKeyDeletion {
-                account_id: account_id.clone(),
-                public_key: public_key.clone(),
             },
             StateChangeValueView::DataUpdate {
                 account_id,

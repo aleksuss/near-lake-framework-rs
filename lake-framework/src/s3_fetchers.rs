@@ -90,7 +90,7 @@ pub(crate) async fn list_block_heights(
         start_from_block_height
     );
     let response = lake_s3_client
-        .list_objects(s3_bucket_name, &format!("{:0>12}", start_from_block_height))
+        .list_objects(s3_bucket_name, &format!("{start_from_block_height:0>12}"))
         .await?;
 
     Ok(match response.common_prefixes {
@@ -114,8 +114,8 @@ pub(crate) async fn list_block_heights(
 /// By the given block height gets the objects:
 /// - block.json
 /// - shard_N.json
-/// Reads the content of the objects and parses as a JSON.
-/// Returns the result in `near_indexer_primitives::StreamerMessage`
+///   Reads the content of the objects and parses as a JSON.
+///   Returns the result in `near_indexer_primitives::StreamerMessage`
 pub(crate) async fn fetch_streamer_message(
     lake_s3_client: &impl S3Client,
     s3_bucket_name: &str,
@@ -124,7 +124,7 @@ pub(crate) async fn fetch_streamer_message(
     let block_view = {
         let body_bytes = loop {
             match lake_s3_client
-                .get_object(s3_bucket_name, &format!("{:0>12}/block.json", block_height))
+                .get_object(s3_bucket_name, &format!("{block_height:0>12}/block.json"))
                 .await
             {
                 Ok(response) => {
@@ -184,7 +184,7 @@ async fn fetch_shard_or_retry(
         match lake_s3_client
             .get_object(
                 s3_bucket_name,
-                &format!("{:0>12}/shard_{}.json", block_height, shard_id),
+                &format!("{block_height:0>12}/shard_{shard_id}.json"),
             )
             .await
         {

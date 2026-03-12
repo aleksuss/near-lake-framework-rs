@@ -99,6 +99,8 @@ pub enum Action {
     UseGlobalContract(UseGlobalContract),
     UseGlobalContractByAccountId(UseGlobalContractByAccountId),
     DeterministicStateInit(DeterministicStateInit),
+    TransferToGasKey(TransferToGasKey),
+    WithdrawFromGasKey(WithdrawFromGasKey),
 }
 
 impl ActionMetaDataExt for Action {
@@ -118,6 +120,8 @@ impl ActionMetaDataExt for Action {
             Self::UseGlobalContract(action) => action.metadata(),
             Self::UseGlobalContractByAccountId(action) => action.metadata(),
             Self::DeterministicStateInit(action) => action.metadata(),
+            Self::TransferToGasKey(action) => action.metadata(),
+            Self::WithdrawFromGasKey(action) => action.metadata(),
         }
     }
 }
@@ -148,6 +152,8 @@ impl Action {
     impl_as_action_for!(DeployGlobalContract);
     impl_as_action_for!(UseGlobalContract);
     impl_as_action_for!(DeterministicStateInit);
+    impl_as_action_for!(TransferToGasKey);
+    impl_as_action_for!(WithdrawFromGasKey);
 }
 
 // Macro to implement ActionMetaDataExt trait for each Action variant.
@@ -175,6 +181,8 @@ impl_action_metadata_ext!(DeployGlobalContractByAccountId);
 impl_action_metadata_ext!(UseGlobalContract);
 impl_action_metadata_ext!(UseGlobalContractByAccountId);
 impl_action_metadata_ext!(DeterministicStateInit);
+impl_action_metadata_ext!(TransferToGasKey);
+impl_action_metadata_ext!(WithdrawFromGasKey);
 
 /// Structure representing the `CreateAccount` action.
 /// This is a special action that is used to create a new account on the blockchain. It doesn't contain any
@@ -408,5 +416,39 @@ impl DeterministicStateInit {
 
     pub fn deposit(&self) -> Balance {
         self.deposit
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TransferToGasKey {
+    pub(crate) metadata: ActionMetadata,
+    pub(crate) public_key: PublicKey,
+    pub(crate) deposit: Balance,
+}
+
+impl TransferToGasKey {
+    pub fn public_key(&self) -> &PublicKey {
+        &self.public_key
+    }
+
+    pub fn deposit(&self) -> Balance {
+        self.deposit
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct WithdrawFromGasKey {
+    pub(crate) metadata: ActionMetadata,
+    pub(crate) public_key: PublicKey,
+    pub(crate) amount: Balance,
+}
+
+impl WithdrawFromGasKey {
+    pub fn public_key(&self) -> &PublicKey {
+        &self.public_key
+    }
+
+    pub fn amount(&self) -> Balance {
+        self.amount
     }
 }

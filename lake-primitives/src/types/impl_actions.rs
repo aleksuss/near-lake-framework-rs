@@ -133,6 +133,21 @@ impl Action {
                         data: data.clone(),
                         deposit: *deposit,
                     }),
+                    views::ActionView::TransferToGasKey {
+                        public_key,
+                        deposit,
+                    } => Self::TransferToGasKey(crate::actions::TransferToGasKey {
+                        metadata: metadata.clone(),
+                        public_key: public_key.clone(),
+                        deposit: *deposit,
+                    }),
+                    views::ActionView::WithdrawFromGasKey { public_key, amount } => {
+                        Self::WithdrawFromGasKey(crate::actions::WithdrawFromGasKey {
+                            metadata: metadata.clone(),
+                            public_key: public_key.clone(),
+                            amount: *amount,
+                        })
+                    }
                 };
                 result.push(action_kind);
             }
@@ -266,6 +281,21 @@ impl Action {
                     data: data.clone(),
                     deposit: *deposit,
                 }),
+                views::ActionView::TransferToGasKey {
+                    public_key,
+                    deposit,
+                } => Self::TransferToGasKey(crate::actions::TransferToGasKey {
+                    metadata: metadata.clone(),
+                    public_key: public_key.clone(),
+                    deposit: *deposit,
+                }),
+                views::ActionView::WithdrawFromGasKey { public_key, amount } => {
+                    Self::WithdrawFromGasKey(crate::actions::WithdrawFromGasKey {
+                        metadata: metadata.clone(),
+                        public_key: public_key.clone(),
+                        amount: *amount,
+                    })
+                }
             };
 
             actions.push(action);

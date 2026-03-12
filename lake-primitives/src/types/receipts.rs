@@ -35,7 +35,7 @@ impl Receipt {
     }
 
     /// Returns the [CryptoHash] id of the receipt.
-    pub fn receipt_id(&self) -> CryptoHash {
+    pub const fn receipt_id(&self) -> CryptoHash {
         self.receipt_id
     }
 
@@ -60,7 +60,7 @@ impl Receipt {
     ///
     /// Note that this is an optional field because the ExecutionOutcome might not be available
     /// if the [Receipt] is "postponed" (included in the block but not executed yet)
-    pub fn execution_outcome_id(&self) -> Option<CryptoHash> {
+    pub const fn execution_outcome_id(&self) -> Option<CryptoHash> {
         self.execution_outcome_id
     }
 

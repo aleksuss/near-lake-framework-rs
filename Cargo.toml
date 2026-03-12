@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "lake-framework",
     "lake-primitives",
@@ -15,4 +16,4 @@ description = "Library to connect to the NEAR Lake S3 and stream the data"
 categories = ["asynchronous", "api-bindings", "network-programming"]
 keywords = ["near", "near-lake", "near-indexer"]
 authors = ["Near Inc <hello@nearprotocol.com>"]
-rust-version = "1.69.0"
+rust-version = "1.88.0"

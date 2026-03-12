@@ -29,7 +29,7 @@ impl Event {
     }
 
     /// Returns the `data` value from the [RawEvent] if present, otherwise returns `None`.
-    pub fn data(&self) -> Option<&serde_json::Value> {
+    pub const fn data(&self) -> Option<&serde_json::Value> {
         self.raw_event.data.as_ref()
     }
 
@@ -85,7 +85,7 @@ pub trait EventsTrait<Receipt> {
     fn events(&self) -> Vec<Event>;
 }
 
-impl EventsTrait<Receipt> for Receipt {
+impl EventsTrait<Self> for Receipt {
     /// Reads the logs from the [Receipt] and extracts all the [Events](Event) from it into a Vec.
     fn events(&self) -> Vec<Event> {
         self.logs()
