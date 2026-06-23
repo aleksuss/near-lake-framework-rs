@@ -45,10 +45,10 @@ impl types::Lake {
     ///
     /// # async fn handle_block(_block: near_lake_primitives::block::Block, context: &MyContext) -> anyhow::Result<()> { Ok(()) }
     ///```
-    pub fn run_with_context<C: LakeContextExt, E, Fut>(
+    pub fn run_with_context<'a, C: LakeContextExt, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &C) -> Fut,
-        context: &C,
+        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut,
+        context: &'a C,
     ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
@@ -60,10 +60,10 @@ impl types::Lake {
         runtime.block_on(async move { self.run_with_context_async(f, context).await })
     }
 
-    pub async fn run_with_context_async<C: LakeContextExt, E, Fut>(
+    pub async fn run_with_context_async<'a, C: LakeContextExt, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &C) -> Fut,
-        context: &C,
+        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut,
+        context: &'a C,
     ) -> Result<(), Box<LakeError>>
     where
         Fut: Future<Output = Result<(), E>>,
@@ -123,7 +123,7 @@ impl types::Lake {
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,
     {
-        struct EmptyContext {}
+        struct EmptyContext;
 
         impl LakeContextExt for EmptyContext {
             fn execute_before_run(&self, _block: &mut near_lake_primitives::block::Block) {}
@@ -131,7 +131,7 @@ impl types::Lake {
             fn execute_after_run(&self) {}
         }
 
-        let context = EmptyContext {};
+        let context = EmptyContext;
 
         self.run_with_context(|block, _context| f(block), &context)
     }
@@ -158,7 +158,7 @@ impl types::Lake {
         Fut: Future<Output = Result<(), E>>,
         E: Into<Box<dyn std::error::Error>>,
     {
-        struct EmptyContext {}
+        struct EmptyContext;
 
         impl LakeContextExt for EmptyContext {
             fn execute_before_run(&self, _block: &mut near_lake_primitives::block::Block) {}
@@ -166,7 +166,7 @@ impl types::Lake {
             fn execute_after_run(&self) {}
         }
 
-        let context = EmptyContext {};
+        let context = EmptyContext;
 
         self.run_with_context_async(|block, _context| f(block), &context)
             .await

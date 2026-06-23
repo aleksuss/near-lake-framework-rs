@@ -148,6 +148,14 @@ impl Action {
                             amount: *amount,
                         })
                     }
+                    views::ActionView::DelegateV2 {
+                        delegate_action,
+                        signature,
+                    } => Self::DelegateV2(crate::actions::DelegateV2 {
+                        metadata: metadata.clone(),
+                        delegate_action: delegate_action.clone(),
+                        signature: signature.clone(),
+                    }),
                 };
                 result.push(action_kind);
             }
@@ -296,6 +304,14 @@ impl Action {
                         amount: *amount,
                     })
                 }
+                views::ActionView::DelegateV2 {
+                    delegate_action,
+                    signature,
+                } => Self::DelegateV2(crate::actions::DelegateV2 {
+                    metadata: metadata.clone(),
+                    delegate_action: delegate_action.clone(),
+                    signature: signature.clone(),
+                }),
             };
 
             actions.push(action);

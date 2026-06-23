@@ -1,4 +1,4 @@
-use near_crypto::PublicKey;
+use near_crypto::PublicKeyHandle;
 use near_primitives::types::Nonce;
 
 use crate::near_indexer_primitives::{
@@ -108,16 +108,16 @@ pub enum StateChangeValue {
     },
     AccessKeyUpdate {
         account_id: AccountId,
-        public_key: PublicKey,
+        public_key: PublicKeyHandle,
         access_key: AccessKeyView,
     },
     AccessKeyDeletion {
         account_id: AccountId,
-        public_key: PublicKey,
+        public_key: PublicKeyHandle,
     },
     GasKeyNonceUpdate {
         account_id: AccountId,
-        public_key: PublicKey,
+        public_key: PublicKeyHandle,
         index: u16,
         nonce: Nonce,
     },

@@ -5,6 +5,7 @@ use near_indexer_primitives::{
     types::{AccountId, Balance, Gas},
     views, CryptoHash,
 };
+use near_primitives::action::delegate::VersionedDelegateActionPayload;
 use near_primitives::views::GlobalContractIdentifierView;
 
 use crate::types::delegate_actions;
@@ -101,6 +102,7 @@ pub enum Action {
     DeterministicStateInit(DeterministicStateInit),
     TransferToGasKey(TransferToGasKey),
     WithdrawFromGasKey(WithdrawFromGasKey),
+    DelegateV2(DelegateV2),
 }
 
 impl ActionMetaDataExt for Action {
@@ -122,6 +124,7 @@ impl ActionMetaDataExt for Action {
             Self::DeterministicStateInit(action) => action.metadata(),
             Self::TransferToGasKey(action) => action.metadata(),
             Self::WithdrawFromGasKey(action) => action.metadata(),
+            Self::DelegateV2(action) => action.metadata(),
         }
     }
 }
@@ -183,6 +186,7 @@ impl_action_metadata_ext!(UseGlobalContractByAccountId);
 impl_action_metadata_ext!(DeterministicStateInit);
 impl_action_metadata_ext!(TransferToGasKey);
 impl_action_metadata_ext!(WithdrawFromGasKey);
+impl_action_metadata_ext!(DelegateV2);
 
 /// Structure representing the `CreateAccount` action.
 /// This is a special action that is used to create a new account on the blockchain. It doesn't contain any
@@ -450,5 +454,22 @@ impl WithdrawFromGasKey {
 
     pub fn amount(&self) -> Balance {
         self.amount
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DelegateV2 {
+    pub(crate) metadata: ActionMetadata,
+    pub(crate) delegate_action: VersionedDelegateActionPayload,
+    pub(crate) signature: Signature,
+}
+
+impl DelegateV2 {
+    pub fn delegate_action(&self) -> &VersionedDelegateActionPayload {
+        &self.delegate_action
+    }
+
+    pub fn signature(&self) -> &Signature {
+        &self.signature
     }
 }
