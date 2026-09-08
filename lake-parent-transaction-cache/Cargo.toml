@@ -7,8 +7,8 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-cached = "0.43.0"
-derive_builder = "0.12.0"
+cached = "4"
+derive_builder = "0.20"
 
 near-lake-framework = { path = "../lake-framework", version = "0.8.0-beta.2" }
 

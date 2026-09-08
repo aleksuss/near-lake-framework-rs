@@ -2,7 +2,7 @@
 #[macro_use]
 extern crate derive_builder;
 
-use cached::{Cached, SizedCache};
+use cached::{Cached, LruCache};
 use near_lake_framework::{
     near_indexer_primitives::{near_primitives::types::AccountId, CryptoHash},
     near_lake_primitives::{actions::ActionMetaDataExt, block::Block},
@@ -11,14 +11,14 @@ use near_lake_framework::{
 
 pub type ReceiptId = CryptoHash;
 pub type TransactionHash = CryptoHash;
-type Cache = SizedCache<ReceiptId, TransactionHash>;
+type Cache = LruCache<ReceiptId, TransactionHash>;
 
 #[derive(Debug, Builder)]
 #[builder(pattern = "owned")]
 pub struct ParentTransactionCache {
     #[builder(
         setter(custom = true, name = "cache_size"),
-        default = "std::sync::RwLock::new(Cache::with_size(100_000))"
+        default = "std::sync::RwLock::new(Cache::new(100_000))"
     )]
     cache: std::sync::RwLock<Cache>,
     #[builder(setter(custom = true, name = "for_accounts"))]
@@ -28,7 +28,7 @@ pub struct ParentTransactionCache {
 impl ParentTransactionCacheBuilder {
     /// Sets the size of the cache. Default is 100_000.
     pub fn cache_size(mut self, value: usize) -> Self {
-        self.cache = Some(std::sync::RwLock::new(Cache::with_size(value)));
+        self.cache = Some(std::sync::RwLock::new(Cache::new(value)));
         self
     }
 
