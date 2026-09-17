@@ -12,7 +12,7 @@ use crate::{s3_fetchers, types};
 /// [mpsc::Sender<near_indexer_primitives::StreamerMessage>] spawns the streamer
 /// process that writes [near_idnexer_primitives::StreamerMessage] to the given `mpsc::channel`
 /// returns both `sender` and `receiver`
-pub(crate) fn streamer(
+pub fn streamer(
     config: crate::Lake,
 ) -> (
     tokio::task::JoinHandle<Result<(), crate::types::LakeError>>,
@@ -119,7 +119,7 @@ async fn prefetch_block_heights_into_pool(
 }
 
 #[allow(unused_labels)] // we use loop labels for code-readability
-pub(crate) async fn start(
+pub async fn start(
     streamer_message_sink: mpsc::Sender<near_indexer_primitives::StreamerMessage>,
     config: crate::Lake,
 ) -> Result<(), crate::types::LakeError> {

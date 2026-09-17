@@ -6,6 +6,7 @@ use near_indexer_primitives::{
     views, CryptoHash,
 };
 use near_primitives::action::delegate::VersionedDelegateActionPayload;
+use near_primitives::universal_state_init::RawStateInit;
 use near_primitives::views::GlobalContractIdentifierView;
 
 use crate::types::delegate_actions;
@@ -28,7 +29,7 @@ pub struct ActionMetadata {
 
 impl ActionMetadata {
     /// Returns the [CryptoHash] id of the corresponding Receipt.
-    pub fn receipt_id(&self) -> CryptoHash {
+    pub const fn receipt_id(&self) -> CryptoHash {
         self.receipt_id
     }
 
@@ -103,6 +104,7 @@ pub enum Action {
     TransferToGasKey(TransferToGasKey),
     WithdrawFromGasKey(WithdrawFromGasKey),
     DelegateV2(DelegateV2),
+    UniversalStateInit(UniversalStateInit),
 }
 
 impl ActionMetaDataExt for Action {
@@ -125,6 +127,7 @@ impl ActionMetaDataExt for Action {
             Self::TransferToGasKey(action) => action.metadata(),
             Self::WithdrawFromGasKey(action) => action.metadata(),
             Self::DelegateV2(action) => action.metadata(),
+            Self::UniversalStateInit(action) => action.metadata(),
         }
     }
 }
@@ -132,7 +135,7 @@ impl ActionMetaDataExt for Action {
 macro_rules! impl_as_action_for {
     ($action_type:ident) => {
         paste::paste! {
-            pub fn [< as_ $action_type:snake:lower >](&self) -> Option<&$action_type> {
+            pub const fn [< as_ $action_type:snake:lower >](&self) -> Option<&$action_type> {
                 match self {
                     Self::$action_type(action) => Some(action),
                     _ => None,
@@ -187,8 +190,10 @@ impl_action_metadata_ext!(DeterministicStateInit);
 impl_action_metadata_ext!(TransferToGasKey);
 impl_action_metadata_ext!(WithdrawFromGasKey);
 impl_action_metadata_ext!(DelegateV2);
+impl_action_metadata_ext!(UniversalStateInit);
 
 /// Structure representing the `CreateAccount` action.
+///
 /// This is a special action that is used to create a new account on the blockchain. It doesn't contain any
 /// additional data. The `receiver_id` from the metadata is the name of the account that is created by this action.
 #[derive(Debug, Clone)]
@@ -232,12 +237,12 @@ impl FunctionCall {
     }
 
     /// Returns the gas attached to this FunctionCall.
-    pub fn gas(&self) -> Gas {
+    pub const fn gas(&self) -> Gas {
         self.gas
     }
 
     /// Returns the deposit attached to this FunctionCall.
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -251,7 +256,7 @@ pub struct Transfer {
 
 impl Transfer {
     /// Returns the deposit attached to this Transfer.
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -266,12 +271,12 @@ pub struct Stake {
 
 impl Stake {
     /// Returns the stake attached to this Stake.
-    pub fn stake(&self) -> Balance {
+    pub const fn stake(&self) -> Balance {
         self.stake
     }
 
     /// Returns the public key attached to this Stake.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 }
@@ -286,12 +291,12 @@ pub struct AddKey {
 
 impl AddKey {
     /// Returns the [PublicKey] added with this AddKey.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 
     /// Returns the [AccessKey](views::AccessKeyView) to the PublicKey being added with this AddKey.
-    pub fn access_key(&self) -> &views::AccessKeyView {
+    pub const fn access_key(&self) -> &views::AccessKeyView {
         &self.access_key
     }
 }
@@ -305,7 +310,7 @@ pub struct DeleteKey {
 
 impl DeleteKey {
     /// Returns the [PublicKey] deleted with this DeleteKey.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 }
@@ -319,7 +324,7 @@ pub struct DeleteAccount {
 
 impl DeleteAccount {
     /// Returns the beneficiary account ID of this DeleteAccount.
-    pub fn beneficiary_id(&self) -> &AccountId {
+    pub const fn beneficiary_id(&self) -> &AccountId {
         &self.beneficiary_id
     }
 }
@@ -348,7 +353,7 @@ impl Delegate {
     }
 
     /// Returns the signature of the signer on the hash of the `delegate_action`.
-    pub fn signature(&self) -> &Signature {
+    pub const fn signature(&self) -> &Signature {
         &self.signature
     }
 }
@@ -384,7 +389,7 @@ pub struct UseGlobalContract {
 }
 
 impl UseGlobalContract {
-    pub fn code_hash(&self) -> &CryptoHash {
+    pub const fn code_hash(&self) -> &CryptoHash {
         &self.code_hash
     }
 }
@@ -396,7 +401,7 @@ pub struct UseGlobalContractByAccountId {
 }
 
 impl UseGlobalContractByAccountId {
-    pub fn account_id(&self) -> &AccountId {
+    pub const fn account_id(&self) -> &AccountId {
         &self.account_id
     }
 }
@@ -410,15 +415,15 @@ pub struct DeterministicStateInit {
 }
 
 impl DeterministicStateInit {
-    pub fn code(&self) -> &GlobalContractIdentifierView {
+    pub const fn code(&self) -> &GlobalContractIdentifierView {
         &self.code
     }
 
-    pub fn data(&self) -> &BTreeMap<Vec<u8>, Vec<u8>> {
+    pub const fn data(&self) -> &BTreeMap<Vec<u8>, Vec<u8>> {
         &self.data
     }
 
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -431,11 +436,11 @@ pub struct TransferToGasKey {
 }
 
 impl TransferToGasKey {
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -448,11 +453,11 @@ pub struct WithdrawFromGasKey {
 }
 
 impl WithdrawFromGasKey {
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 
-    pub fn amount(&self) -> Balance {
+    pub const fn amount(&self) -> Balance {
         self.amount
     }
 }
@@ -465,11 +470,32 @@ pub struct DelegateV2 {
 }
 
 impl DelegateV2 {
-    pub fn delegate_action(&self) -> &VersionedDelegateActionPayload {
+    pub const fn delegate_action(&self) -> &VersionedDelegateActionPayload {
         &self.delegate_action
     }
 
-    pub fn signature(&self) -> &Signature {
+    pub const fn signature(&self) -> &Signature {
         &self.signature
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct UniversalStateInit {
+    pub(crate) metadata: ActionMetadata,
+    pub(crate) state_init: RawStateInit,
+    pub(crate) deposit: Balance,
+}
+
+impl UniversalStateInit {
+    pub const fn metadata(&self) -> &ActionMetadata {
+        &self.metadata
+    }
+
+    pub const fn state_init(&self) -> &RawStateInit {
+        &self.state_init
+    }
+
+    pub const fn deposit(&self) -> Balance {
+        self.deposit
     }
 }

@@ -45,13 +45,14 @@ impl types::Lake {
     ///
     /// # async fn handle_block(_block: near_lake_primitives::block::Block, context: &MyContext) -> anyhow::Result<()> { Ok(()) }
     ///```
-    pub fn run_with_context<'a, C: LakeContextExt, E, Fut>(
+    pub fn run_with_context<'a, C, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut,
+        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut + Send + Sync + 'a,
         context: &'a C,
     ) -> Result<(), Box<LakeError>>
     where
-        Fut: Future<Output = Result<(), E>>,
+        C: LakeContextExt + Send + Sync,
+        Fut: Future<Output = Result<(), E>> + Send,
         E: Into<Box<dyn std::error::Error>>,
     {
         let runtime = tokio::runtime::Runtime::new()
@@ -60,13 +61,14 @@ impl types::Lake {
         runtime.block_on(async move { self.run_with_context_async(f, context).await })
     }
 
-    pub async fn run_with_context_async<'a, C: LakeContextExt, E, Fut>(
+    pub async fn run_with_context_async<'a, C, E, Fut>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut,
+        f: impl Fn(near_lake_primitives::block::Block, &'a C) -> Fut + Send + Sync + 'a,
         context: &'a C,
     ) -> Result<(), Box<LakeError>>
     where
-        Fut: Future<Output = Result<(), E>>,
+        C: LakeContextExt + Send + Sync,
+        Fut: Future<Output = Result<(), E>> + Send,
         E: Into<Box<dyn std::error::Error>>,
     {
         // capture the concurrency value before it moves into the streamer
@@ -117,10 +119,10 @@ impl types::Lake {
     ///```
     pub fn run<Fut, E>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block) -> Fut,
+        f: impl Fn(near_lake_primitives::block::Block) -> Fut + Sync,
     ) -> Result<(), Box<LakeError>>
     where
-        Fut: Future<Output = Result<(), E>>,
+        Fut: Future<Output = Result<(), E>> + Send,
         E: Into<Box<dyn std::error::Error>>,
     {
         struct EmptyContext;
@@ -152,10 +154,10 @@ impl types::Lake {
     ///```
     pub async fn run_async<Fut, E>(
         self,
-        f: impl Fn(near_lake_primitives::block::Block) -> Fut,
+        f: impl Fn(near_lake_primitives::block::Block) -> Fut + Sync,
     ) -> Result<(), Box<LakeError>>
     where
-        Fut: Future<Output = Result<(), E>>,
+        Fut: Future<Output = Result<(), E>> + Send,
         E: Into<Box<dyn std::error::Error>>,
     {
         struct EmptyContext;

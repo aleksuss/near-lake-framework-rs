@@ -3,6 +3,7 @@ use crate::AccountId;
 use super::receipts::Receipt;
 
 /// Hight-level representation of the Event according to the [Events Format](https://nomicon.io/Standards/EventsFormat.html).
+///
 /// In addition to the event this structure holds the data about the related [Receipt]: `receipt_id`, `receiver_id` and `predecessor_id`. All these fields are accessible via the corresponding getters.
 #[derive(Clone, Debug)]
 pub struct Event {
@@ -37,17 +38,17 @@ impl Event {
     ///
     /// **Please note** that events are emitted through the `ExecutionOutcome` logs. In turn, the `ExecutionOutcome`
     /// is a result of the execution of the [Receipt].
-    pub fn related_receipt_id(&self) -> crate::CryptoHash {
+    pub const fn related_receipt_id(&self) -> crate::CryptoHash {
         self.related_receipt_id
     }
 
     /// Returns the [AccountId] of the receiver of the related [Receipt].
-    pub fn related_receipt_receiver_id(&self) -> &AccountId {
+    pub const fn related_receipt_receiver_id(&self) -> &AccountId {
         &self.receiver_id
     }
 
     /// Returns the [AccountId] of the predecessor of the related [Receipt].
-    pub fn related_receipt_predecessor_id(&self) -> &AccountId {
+    pub const fn related_receipt_predecessor_id(&self) -> &AccountId {
         &self.predecessor_id
     }
 

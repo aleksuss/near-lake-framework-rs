@@ -28,11 +28,7 @@ pub fn lake_context_derive(input: TokenStream) -> TokenStream {
         .filter(|f| {
             let ty = &f.ty;
             if let syn::Type::Path(syn::TypePath { path, .. }) = ty {
-                if let Some(ident) = path.get_ident() {
-                    ident == "LakeContext"
-                } else {
-                    false
-                }
+                path.get_ident().is_some_and(|ident| ident == "LakeContext")
             } else {
                 false
             }
@@ -48,11 +44,7 @@ pub fn lake_context_derive(input: TokenStream) -> TokenStream {
         .filter(|f| {
             let ty = &f.ty;
             if let syn::Type::Path(syn::TypePath { path, .. }) = ty {
-                if let Some(ident) = path.get_ident() {
-                    ident == "LakeContext"
-                } else {
-                    false
-                }
+                path.get_ident().is_some_and(|ident| ident == "LakeContext")
             } else {
                 false
             }

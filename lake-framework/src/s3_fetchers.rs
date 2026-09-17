@@ -31,7 +31,7 @@ pub struct LakeS3Client {
 }
 
 impl LakeS3Client {
-    pub fn new(s3: aws_sdk_s3::Client) -> Self {
+    pub const fn new(s3: aws_sdk_s3::Client) -> Self {
         Self { s3 }
     }
 }
@@ -79,8 +79,8 @@ impl S3Client for LakeS3Client {
 
 /// Queries the list of the objects in the bucket, grouped by "/" delimiter.
 /// Returns the list of block heights that can be fetched
-pub(crate) async fn list_block_heights(
-    lake_s3_client: &impl S3Client,
+pub async fn list_block_heights(
+    lake_s3_client: &(impl S3Client + Send + Sync),
     s3_bucket_name: &str,
     start_from_block_height: crate::types::BlockHeight,
 ) -> Result<Vec<crate::types::BlockHeight>, crate::types::LakeError> {
@@ -93,22 +93,23 @@ pub(crate) async fn list_block_heights(
         .list_objects(s3_bucket_name, &format!("{start_from_block_height:0>12}"))
         .await?;
 
-    Ok(match response.common_prefixes {
-        None => vec![],
-        Some(common_prefixes) => common_prefixes
-            .into_iter()
-            .filter_map(|common_prefix| common_prefix.prefix)
-            .collect::<Vec<String>>()
-            .into_iter()
-            .filter_map(|prefix_string| {
-                prefix_string
-                    .split('/')
-                    .next()
-                    .map(u64::from_str)
-                    .and_then(|num| num.ok())
-            })
-            .collect(),
-    })
+    Ok(response
+        .common_prefixes
+        .map_or_else(Vec::new, |common_prefixes| {
+            common_prefixes
+                .into_iter()
+                .filter_map(|common_prefix| common_prefix.prefix)
+                .collect::<Vec<String>>()
+                .into_iter()
+                .filter_map(|prefix_string| {
+                    prefix_string
+                        .split('/')
+                        .next()
+                        .map(u64::from_str)
+                        .and_then(|num| num.ok())
+                })
+                .collect()
+        }))
 }
 
 /// By the given block height gets the objects:
@@ -116,8 +117,8 @@ pub(crate) async fn list_block_heights(
 /// - shard_N.json
 ///   Reads the content of the objects and parses as a JSON.
 ///   Returns the result in `near_indexer_primitives::StreamerMessage`
-pub(crate) async fn fetch_streamer_message(
-    lake_s3_client: &impl S3Client,
+pub async fn fetch_streamer_message(
+    lake_s3_client: &(impl S3Client + Send + Sync),
     s3_bucket_name: &str,
     block_height: crate::types::BlockHeight,
 ) -> Result<near_lake_primitives::StreamerMessage, crate::types::LakeError> {
@@ -175,7 +176,7 @@ pub(crate) async fn fetch_streamer_message(
 
 /// Fetches the shard data JSON from AWS S3 and returns the `IndexerShard`
 async fn fetch_shard_or_retry(
-    lake_s3_client: &impl S3Client,
+    lake_s3_client: &(impl S3Client + Send + Sync),
     s3_bucket_name: &str,
     block_height: crate::types::BlockHeight,
     shard_id: u64,

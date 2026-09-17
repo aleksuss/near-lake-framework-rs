@@ -24,65 +24,65 @@ pub enum DelegateAction {
 
 impl DelegateAction {
     /// Attempts to return the [DelegateFunctionCall](struct@DelegateFunctionCall) struct if the variant is [DelegateAction::DelegateFunctionCall]. Otherwise returns `None`.
-    pub fn as_delegate_function_call(&self) -> Option<&DelegateFunctionCall> {
+    pub const fn as_delegate_function_call(&self) -> Option<&DelegateFunctionCall> {
         match self {
-            DelegateAction::DelegateFunctionCall(action) => Some(action),
+            Self::DelegateFunctionCall(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateCreateAccount] struct if the variant is [DelegateAction::DelegateCreateAccount]. Otherwise returns `None`.
-    pub fn as_delegate_create_account(&self) -> Option<&DelegateCreateAccount> {
+    pub const fn as_delegate_create_account(&self) -> Option<&DelegateCreateAccount> {
         match self {
-            DelegateAction::DelegateCreateAccount(action) => Some(action),
+            Self::DelegateCreateAccount(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateDeployContract] struct if the variant is [DelegateAction::DelegateDeployContract]. Otherwise returns `None`.
-    pub fn as_delegate_deploy_contract(&self) -> Option<&DelegateDeployContract> {
+    pub const fn as_delegate_deploy_contract(&self) -> Option<&DelegateDeployContract> {
         match self {
-            DelegateAction::DelegateDeployContract(action) => Some(action),
+            Self::DelegateDeployContract(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateTransfer] struct if the variant is [DelegateAction::DelegateTransfer]. Otherwise returns `None`.
-    pub fn as_delegate_transfer(&self) -> Option<&DelegateTransfer> {
+    pub const fn as_delegate_transfer(&self) -> Option<&DelegateTransfer> {
         match self {
-            DelegateAction::DelegateTransfer(action) => Some(action),
+            Self::DelegateTransfer(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateStake] struct if the variant is [DelegateAction::DelegateStake]. Otherwise returns `None`.
-    pub fn as_delegate_stake(&self) -> Option<&DelegateStake> {
+    pub const fn as_delegate_stake(&self) -> Option<&DelegateStake> {
         match self {
-            DelegateAction::DelegateStake(action) => Some(action),
+            Self::DelegateStake(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateAddKey] struct if the variant is [DelegateAction::DelegateAddKey]. Otherwise returns `None`.
-    pub fn as_delegate_add_key(&self) -> Option<&DelegateAddKey> {
+    pub const fn as_delegate_add_key(&self) -> Option<&DelegateAddKey> {
         match self {
-            DelegateAction::DelegateAddKey(action) => Some(action),
+            Self::DelegateAddKey(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateDeleteKey] struct if the variant is [DelegateAction::DelegateDeleteKey]. Otherwise returns `None`.
-    pub fn as_delegate_delete_key(&self) -> Option<&DelegateDeleteKey> {
+    pub const fn as_delegate_delete_key(&self) -> Option<&DelegateDeleteKey> {
         match self {
-            DelegateAction::DelegateDeleteKey(action) => Some(action),
+            Self::DelegateDeleteKey(action) => Some(action),
             _ => None,
         }
     }
 
     /// Attempts to return the [DelegateDeleteAccount] struct if the variant is [DelegateAction::DelegateDeleteAccount]. Otherwise returns `None`.
-    pub fn as_delegate_delete_account(&self) -> Option<&DelegateDeleteAccount> {
+    pub const fn as_delegate_delete_account(&self) -> Option<&DelegateDeleteAccount> {
         match self {
-            DelegateAction::DelegateDeleteAccount(action) => Some(action),
+            Self::DelegateDeleteAccount(action) => Some(action),
             _ => None,
         }
     }
@@ -126,12 +126,12 @@ impl DelegateFunctionCall {
     }
 
     /// Returns the amount of gas that is being used for the method call.
-    pub fn gas(&self) -> Gas {
+    pub const fn gas(&self) -> Gas {
         self.gas
     }
 
     /// Returns the amount of tokens that are being deposited to the contract.
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -144,7 +144,7 @@ pub struct DelegateTransfer {
 
 impl DelegateTransfer {
     /// Returns the amount of tokens that are being transferred.
-    pub fn deposit(&self) -> Balance {
+    pub const fn deposit(&self) -> Balance {
         self.deposit
     }
 }
@@ -158,12 +158,12 @@ pub struct DelegateStake {
 
 impl DelegateStake {
     /// Returns the amount of tokens that are being staked.
-    pub fn stake(&self) -> Balance {
+    pub const fn stake(&self) -> Balance {
         self.stake
     }
 
     /// Returns the public key of the staking pool.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 }
@@ -177,12 +177,12 @@ pub struct DelegateAddKey {
 
 impl DelegateAddKey {
     /// Returns the public key that is being added.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 
     /// Returns the access key that is being added.
-    pub fn access_key(&self) -> &AccessKeyView {
+    pub const fn access_key(&self) -> &AccessKeyView {
         &self.access_key
     }
 }
@@ -195,7 +195,7 @@ pub struct DelegateDeleteKey {
 
 impl DelegateDeleteKey {
     /// Returns the public key that is being deleted.
-    pub fn public_key(&self) -> &PublicKey {
+    pub const fn public_key(&self) -> &PublicKey {
         &self.public_key
     }
 }
@@ -208,7 +208,7 @@ pub struct DelegateDeleteAccount {
 
 impl DelegateDeleteAccount {
     /// Returns the account ID of the beneficiary.
-    pub fn beneficiary_id(&self) -> &AccountId {
+    pub const fn beneficiary_id(&self) -> &AccountId {
         &self.beneficiary_id
     }
 }

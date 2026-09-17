@@ -156,6 +156,14 @@ impl Action {
                         delegate_action: delegate_action.clone(),
                         signature: signature.clone(),
                     }),
+                    views::ActionView::UniversalStateInit {
+                        state_init,
+                        deposit,
+                    } => Self::UniversalStateInit(crate::actions::UniversalStateInit {
+                        metadata: metadata.clone(),
+                        state_init: state_init.clone(),
+                        deposit: *deposit,
+                    }),
                 };
                 result.push(action_kind);
             }
@@ -311,6 +319,14 @@ impl Action {
                     metadata: metadata.clone(),
                     delegate_action: delegate_action.clone(),
                     signature: signature.clone(),
+                }),
+                views::ActionView::UniversalStateInit {
+                    state_init,
+                    deposit,
+                } => Self::UniversalStateInit(crate::actions::UniversalStateInit {
+                    metadata: metadata.clone(),
+                    state_init: state_init.clone(),
+                    deposit: *deposit,
                 }),
             };
 

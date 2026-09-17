@@ -44,7 +44,7 @@ impl Block {
     ///
     /// That’s why every instance of the Block will hold the original StreamerMessage for developers.
     /// Think of it as backward compatibility if you prefer.
-    pub fn streamer_message(&self) -> &StreamerMessage {
+    pub const fn streamer_message(&self) -> &StreamerMessage {
         &self.streamer_message
     }
 
@@ -194,11 +194,9 @@ impl Block {
         if self.events.is_empty() {
             self.build_events_hashmap();
         }
-        if let Some(events) = self.events.get(receipt_id) {
-            events.to_vec()
-        } else {
-            vec![]
-        }
+        self.events
+            .get(receipt_id)
+            .map_or_else(Vec::new, |events| events.to_vec())
     }
 
     /// Helper to get all the [Events](crate::events::Event) emitted by the specific contract ([AccountId](crate::near_indexer_primitives::types::AccountId))
@@ -247,6 +245,7 @@ impl From<StreamerMessage> for Block {
 }
 
 /// Replacement for [`BlockHeaderView`](near_primitives::views::BlockHeaderView) from `near-primitives`. Shrank and simplified.
+///
 /// We were trying to leave only the fields indexer developers might be interested in.
 ///
 /// Friendly reminder, the original [`BlockHeaderView`](near_primitives::views::BlockHeaderView) is still accessible
@@ -270,17 +269,17 @@ pub struct BlockHeader {
 
 impl BlockHeader {
     /// The height of the [Block]
-    pub fn height(&self) -> u64 {
+    pub const fn height(&self) -> u64 {
         self.height
     }
 
     /// The hash of the [Block]
-    pub fn hash(&self) -> CryptoHash {
+    pub const fn hash(&self) -> CryptoHash {
         self.hash
     }
 
     /// The hash of the previous [Block]
-    pub fn prev_hash(&self) -> CryptoHash {
+    pub const fn prev_hash(&self) -> CryptoHash {
         self.prev_hash
     }
 
@@ -290,42 +289,42 @@ impl BlockHeader {
     }
 
     /// The timestamp of the [Block] in nanoseconds
-    pub fn timestamp_nanosec(&self) -> u64 {
+    pub const fn timestamp_nanosec(&self) -> u64 {
         self.timestamp_nanosec
     }
 
     /// The [CryptoHash] of the epoch the [Block] belongs to
-    pub fn epoch_id(&self) -> CryptoHash {
+    pub const fn epoch_id(&self) -> CryptoHash {
         self.epoch_id
     }
 
     /// The [CryptoHash] of the next epoch
-    pub fn next_epoch_id(&self) -> CryptoHash {
+    pub const fn next_epoch_id(&self) -> CryptoHash {
         self.next_epoch_id
     }
 
     /// The gas price of the [Block]
-    pub fn gas_price(&self) -> Balance {
+    pub const fn gas_price(&self) -> Balance {
         self.gas_price
     }
 
     /// The total supply of the [Block]
-    pub fn total_supply(&self) -> Balance {
+    pub const fn total_supply(&self) -> Balance {
         self.total_supply
     }
 
     /// The latest protocol version of the [Block]
-    pub fn latest_protocol_version(&self) -> u32 {
+    pub const fn latest_protocol_version(&self) -> u32 {
         self.latest_protocol_version
     }
 
     /// The random value of the [Block]
-    pub fn random_value(&self) -> CryptoHash {
+    pub const fn random_value(&self) -> CryptoHash {
         self.random_value
     }
 
     /// The number of chunks included in the [Block]
-    pub fn chunks_included(&self) -> u64 {
+    pub const fn chunks_included(&self) -> u64 {
         self.chunks_included
     }
 
