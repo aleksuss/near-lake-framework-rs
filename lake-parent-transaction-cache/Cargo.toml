@@ -1,19 +1,18 @@
 [package]
 name = "near-lake-parent-transaction-cache"
 description = "Ready-to-use context for the Lake Framework in Rust. It provides a cache for keeping the relation between transactions and receipts in cache."
-edition = "2021"
+edition.workspace = true
 version.workspace = true
 license.workspace = true
 repository.workspace = true
 
 [dependencies]
-cached = "4"
-derive_builder = "0.20"
-
-near-lake-framework = { path = "../lake-framework", version = "0.8.0-beta.2" }
+cached.workspace = true
+derive_builder.workspace = true
+near-lake-framework.workspace = true
 
 [dev-dependencies]
-anyhow = "1.0.44"
+anyhow.workspace = true
 
 [[example]]
 name = "with_context_parent_tx_cache"

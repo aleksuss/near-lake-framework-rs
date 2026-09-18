@@ -7,7 +7,7 @@ use super::events::{self, EventsTrait};
 use super::receipts::{self};
 use super::state_changes;
 use super::transactions;
-use crate::near_indexer_primitives::{types::AccountId, views, CryptoHash, StreamerMessage};
+use crate::near_indexer_primitives::{CryptoHash, StreamerMessage, types::AccountId, views};
 
 /// A structure that represents an entire block in the NEAR blockchain.
 /// It is a high-level structure that is built on top of the low-level [StreamerMessage] structure.

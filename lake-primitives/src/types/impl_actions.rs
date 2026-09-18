@@ -1,4 +1,4 @@
-use near_indexer_primitives::{views, IndexerTransactionWithOutcome};
+use near_indexer_primitives::{IndexerTransactionWithOutcome, views};
 
 use crate::actions::{Action, ActionMetadata, DelegateAction};
 

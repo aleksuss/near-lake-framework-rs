@@ -2,8 +2,9 @@ use std::collections::BTreeMap;
 
 use near_crypto::{PublicKey, Signature};
 use near_indexer_primitives::{
+    CryptoHash,
     types::{AccountId, Balance, Gas},
-    views, CryptoHash,
+    views,
 };
 use near_primitives::action::delegate::VersionedDelegateActionPayload;
 use near_primitives::universal_state_init::RawStateInit;

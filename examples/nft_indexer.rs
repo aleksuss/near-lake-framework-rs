@@ -26,11 +26,11 @@ fn main() -> anyhow::Result<()> {
 
 async fn handle_block(mut block: near_lake_primitives::block::Block) -> anyhow::Result<()> {
     // Indexing lines START
-    let nfts: Vec<NFTReceipt> = block
+    let nfts: Vec<NftReceipt> = block
         .events() // fetching all the events that occurred in the block
         .filter(|event| event.standard() == "nep171")
         .filter(|event| event.event() == "nft_mint") // filter them by "nft_mint" event only
-        .filter_map(|event| parse_event(event))
+        .filter_map(parse_event)
         .collect();
     // Indexing lines END
 
@@ -63,7 +63,7 @@ async fn handle_block(mut block: near_lake_primitives::block::Block) -> anyhow::
 ///
 /// An `Option<NFTReceipt>` containing the extracted NFT data, or `None` if the event data could not
 /// be parsed.
-fn parse_event(event: &near_lake_primitives::events::Event) -> Option<NFTReceipt> {
+fn parse_event(event: &near_lake_primitives::events::Event) -> Option<NftReceipt> {
     let marketplace = {
         if MINTBASE_STORE_REGEXP.is_match(event.related_receipt_receiver_id().as_str()) {
             Marketplace::Mintbase
@@ -75,17 +75,13 @@ fn parse_event(event: &near_lake_primitives::events::Event) -> Option<NFTReceipt
     };
 
     if let Some(event_data) = event.data() {
-        if let Some(nfts) = marketplace
+        marketplace
             .convert_event_data_to_nfts(event_data.clone(), event.related_receipt_receiver_id())
-        {
-            Some(NFTReceipt {
+            .map(|nfts| NftReceipt {
                 receipt_id: event.related_receipt_id().to_string(),
                 marketplace_name: marketplace.name(),
                 nfts,
             })
-        } else {
-            None
-        }
     } else {
         None
     }
@@ -109,7 +105,7 @@ impl Marketplace {
         &self,
         event_data: serde_json::Value,
         receiver_id: &near_lake_primitives::near_primitives::types::AccountId,
-    ) -> Option<Vec<NFT>> {
+    ) -> Option<Vec<Nft>> {
         match self {
             Self::Mintbase => Some(self.mintbase(event_data, receiver_id)),
             Self::Paras => Some(self.paras(event_data, receiver_id)),
@@ -121,23 +117,24 @@ impl Marketplace {
         &self,
         event_data: serde_json::Value,
         receiver_id: &near_lake_primitives::near_primitives::types::AccountId,
-    ) -> Vec<NFT> {
+    ) -> Vec<Nft> {
         let paras_event_data = serde_json::from_value::<Vec<NftMintLog>>(event_data)
             .expect("Failed to parse NftMintLog");
 
         paras_event_data
             .iter()
-            .map(|nft_mint_log| NFT {
+            .map(|nft_mint_log| Nft {
                 owner: nft_mint_log.owner_id.clone(),
                 links: nft_mint_log
                     .token_ids
                     .iter()
                     .map(|token_id| {
                         format!(
-                            "https://paras.id/token/{}::{}/{}",
-                            receiver_id.to_string(),
-                            token_id.split(":").collect::<Vec<&str>>()[0],
-                            token_id,
+                            "https://paras.id/token/{receiver_id}::{}/{token_id}",
+                            token_id
+                                .split_once(":")
+                                .map(|(prefix, _)| prefix)
+                                .unwrap_or(token_id),
                         )
                     })
                     .collect(),
@@ -149,13 +146,13 @@ impl Marketplace {
         &self,
         event_data: serde_json::Value,
         receiver_id: &near_lake_primitives::near_primitives::types::AccountId,
-    ) -> Vec<NFT> {
+    ) -> Vec<Nft> {
         let mintbase_event_data = serde_json::from_value::<Vec<NftMintLog>>(event_data)
             .expect("Failed to parse NftMintLog");
 
         mintbase_event_data
             .iter()
-            .map(|nft_mint_log| NFT {
+            .map(|nft_mint_log| Nft {
                 owner: nft_mint_log.owner_id.clone(),
                 links: vec![format!(
                     "https://mintbase.io/contract/{}/token/{}",
@@ -171,17 +168,17 @@ impl Marketplace {
 // However, they are printed to the terminal for debugging purposes.
 #[allow(dead_code)]
 #[derive(Debug)]
-struct NFTReceipt {
+struct NftReceipt {
     receipt_id: String,
     marketplace_name: String,
-    nfts: Vec<NFT>,
+    nfts: Vec<Nft>,
 }
 
 // We are allowing the dead_code lint because not all fields of the structures are used
 // However, they are printed to the terminal for debugging purposes.
 #[allow(dead_code)]
 #[derive(Debug)]
-struct NFT {
+struct Nft {
     owner: String,
     links: Vec<String>,
 }

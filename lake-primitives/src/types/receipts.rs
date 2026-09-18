@@ -1,5 +1,5 @@
 use crate::near_indexer_primitives::{
-    types::AccountId, views, CryptoHash, IndexerExecutionOutcomeWithReceipt,
+    CryptoHash, IndexerExecutionOutcomeWithReceipt, types::AccountId, views,
 };
 
 /// Simplified representation of the `Receipt`.

@@ -1,6 +1,19 @@
 /// Type alias represents the block height
 pub type BlockHeight = u64;
 
+#[derive(Clone, Copy, Debug)]
+pub struct MessageMetadata {
+    pub height: BlockHeight,
+    pub hash: crate::near_indexer_primitives::CryptoHash,
+    pub prev_hash: crate::near_indexer_primitives::CryptoHash,
+}
+
+#[derive(Debug)]
+pub struct FetchedMessage<M> {
+    pub message: M,
+    pub metadata: MessageMetadata,
+}
+
 /// Configuration struct for NEAR Lake Framework
 /// NB! Consider using [`LakeBuilder`]
 /// Building the `Lake` example:
@@ -178,7 +191,7 @@ pub enum LakeError {
 /// use near_lake_framework::LakeContextExt; // note Lake Framework exports this trait with a suffix Ext in the name
 /// struct PrinterContext;
 ///
-/// impl LakeContextExt for PrinterContext {
+/// impl LakeContextExt<near_lake_primitives::block::Block> for PrinterContext {
 ///    fn execute_before_run(&self, block: &mut near_lake_primitives::block::Block) {
 ///       println!("Processing block {}", block.header().height());
 ///   }
@@ -200,7 +213,7 @@ pub enum LakeError {
 ///
 /// // We need our context to do nothing before and after the indexing process.
 /// // The only purpose is to provide the database connection pool to the indexing process.
-/// impl LakeContextExt for ApplicationDataContext {
+/// impl LakeContextExt<near_lake_primitives::block::Block> for ApplicationDataContext {
 ///   fn execute_before_run(&self, block: &mut near_lake_primitives::block::Block) {}
 ///   fn execute_after_run(&self) {}
 /// }
@@ -239,7 +252,7 @@ pub enum LakeError {
 /// use near_lake_framework::LakeBuilder;
 ///
 /// #[derive(LakeContext)]
-/// /// struct ApplicationDataContext {
+/// struct ApplicationDataContext {
 ///    pub db_pool: diesel::pg::PgConnection,
 /// }
 ///
@@ -284,13 +297,15 @@ pub enum LakeError {
 ///
 /// #[derive(LakeContext)]
 /// struct ApplicationDataContext {
-///    pub db_pool: diesel::pg::PgConnection,
+///    pub db_pool: std::sync::Mutex<diesel::pg::PgConnection>,
 ///   pub parent_transaction_cache: ParentTransactionCache,
 /// }
 ///
 /// fn main() {
-///     let db_pool = diesel::PgConnection::establish("postgres://postgres:password@localhost:5432/database")
-///        .unwrap_or_else(|_| panic!("Error connecting to database"));
+///     let db_pool = std::sync::Mutex::new(
+///         diesel::PgConnection::establish("postgres://postgres:password@localhost:5432/database")
+///             .unwrap_or_else(|_| panic!("Error connecting to database")),
+///     );
 ///     let parent_transaction_cache = ParentTransactionCacheBuilder::default().build().unwrap();
 ///
 ///     let context = ApplicationDataContext { db_pool, parent_transaction_cache };
@@ -308,7 +323,7 @@ pub enum LakeError {
 ///    context: &ApplicationDataContext,
 /// ) -> Result<(), near_lake_framework::LakeError> {
 ///     // Now we can use the database connection pool
-///     let db_pool = &context.db_pool;
+///     let db_pool = context.db_pool.lock().unwrap();
 ///     dbg!(&context.parent_transaction_cache);
 ///     Ok(())
 /// }
@@ -317,9 +332,9 @@ pub enum LakeError {
 /// The `ParentTransactionCache` defines the `execute_before_run` and `execute_after_run` methods. So when we call `run_with_context` method
 /// the Lake Framework will call `execute_before_run` and `execute_after_run` methods for us.
 /// And we didn't need to implement them in our `ApplicationDataContext` struct because `LakeContext` derive macro did it for us automatically.
-pub trait LakeContextExt {
+pub trait LakeContextExt<M = near_lake_primitives::block::Block> {
     /// This method will be called before the indexing process is started.
-    fn execute_before_run(&self, block: &mut near_lake_primitives::block::Block);
+    fn execute_before_run(&self, block: &mut M);
     /// This method will be called after the indexing process is finished.
     fn execute_after_run(&self);
 }

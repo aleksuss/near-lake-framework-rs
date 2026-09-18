@@ -1,7 +1,7 @@
 use near_crypto::{PublicKey, Signature};
 
 use super::receipts::ExecutionStatus;
-use crate::near_indexer_primitives::{types::AccountId, CryptoHash, IndexerTransactionWithOutcome};
+use crate::near_indexer_primitives::{CryptoHash, IndexerTransactionWithOutcome, types::AccountId};
 
 /// High-level representation of the `Transaction`.
 ///

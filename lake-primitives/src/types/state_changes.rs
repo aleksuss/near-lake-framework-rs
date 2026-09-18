@@ -2,12 +2,12 @@ use near_crypto::PublicKeyHandle;
 use near_primitives::types::Nonce;
 
 use crate::near_indexer_primitives::{
+    CryptoHash,
     types::AccountId,
     views::{
         AccessKeyView, AccountView, StateChangeCauseView, StateChangeValueView,
         StateChangeWithCauseView,
     },
-    CryptoHash,
 };
 
 /// Represents the changes to the state of the account.

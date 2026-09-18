@@ -1,17 +1,17 @@
 [package]
 name = "near-lake-primitives"
 description = "Primitives for NEAR Lake"
-edition = "2021"
+edition.workspace = true
 version.workspace = true
 license.workspace = true
 repository.workspace = true
 
 
 [dependencies]
-anyhow = "1.0.51"
-near-crypto = "0.38.0-rc.1"
-near-primitives = "0.38.0-rc.1"
-near-indexer-primitives = "0.38.0-rc.1"
-paste = "1.0.12"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1.0.75"
+anyhow.workspace = true
+near-crypto.workspace = true
+near-primitives.workspace = true
+near-indexer-primitives.workspace = true
+paste.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true

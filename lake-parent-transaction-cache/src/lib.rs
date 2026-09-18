@@ -4,9 +4,9 @@ extern crate derive_builder;
 
 use cached::{Cached, LruCache};
 use near_lake_framework::{
-    near_indexer_primitives::{near_primitives::types::AccountId, CryptoHash},
-    near_lake_primitives::{actions::ActionMetaDataExt, block::Block},
     LakeContextExt,
+    near_indexer_primitives::{CryptoHash, near_primitives::types::AccountId},
+    near_lake_primitives::{actions::ActionMetaDataExt, block::Block},
 };
 
 pub type ReceiptId = CryptoHash;
@@ -58,7 +58,7 @@ impl ParentTransactionCacheBuilder {
     }
 }
 
-impl LakeContextExt for ParentTransactionCache {
+impl LakeContextExt<Block> for ParentTransactionCache {
     /// The process to scan the [near_lake_primitives::Block](near_lake_framework::near_lake_primitives::block::Block) and update the cache
     /// with the new transactions and first expected receipts.
     /// The cache is used to find the parent transaction hash for a given receipt id.
